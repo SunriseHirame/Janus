@@ -13,7 +13,6 @@ namespace Hirame.Janus
 
         public void OnWaypointReached (WaypointLink waypointLink)
         {
-            Debug.Log (waypointLink);
             lastWaypointLink = waypointLink;
         }
 

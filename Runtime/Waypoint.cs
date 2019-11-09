@@ -1,47 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using Hirame.Pantheon;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Hirame.Janus
 {
+    [ExecuteInEditMode]
     public class Waypoint : MonoBehaviour
     {        
-        private static Dictionary<WaypointLink, Waypoint> waypoints = new Dictionary<WaypointLink, Waypoint> ();
+        private static Dictionary<WaypointLink, Waypoint> loadedWaypoints = new Dictionary<WaypointLink, Waypoint> ();
 
         [SerializeField] private WaypointLink waypointLink;
         
-        [ReadOnly]
-        [SerializeField] private Suid triggerId;
-
         public Vector3 Position => transform.position;
-
-        internal ref readonly Suid Id
-        {
-            get
-            {
-                if (!triggerId.IsValid ())
-                    triggerId = Suid.CreateNew ();
-
-                return ref triggerId;
-            }
-        }
 
         public static bool TryGetWaypointFromLink (WaypointLink link, out Waypoint waypoint)
         {
-            return waypoints.TryGetValue (link, out waypoint);
+            return loadedWaypoints.TryGetValue (link, out waypoint);
         }
 
         private void Awake ()
         {
-            if (waypointLink)
-                waypoints.Add (waypointLink, this);
+            if (!waypointLink) 
+                return;
+            
+            if (loadedWaypoints.ContainsKey (waypointLink))
+            {
+                waypointLink = null;
+            }
+            else
+            {
+                loadedWaypoints.Add (waypointLink, this);
+            }
         }
 
         private void OnDestroy ()
         {
             if (waypointLink)
-                waypoints.Remove (waypointLink);
+                loadedWaypoints.Remove (waypointLink);
         }
 
         private void OnTriggerEnter (Collider other)
@@ -61,7 +55,7 @@ namespace Hirame.Janus
         {
             if (waypointLink)
             {
-                waypointLink.PushTrigger (this);
+                waypointLink.SetTargetWaypoint (this);
             }
         }
     }

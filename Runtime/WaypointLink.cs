@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace Hirame.Janus
 {
-    [CreateAssetMenu (menuName = "Hirame/Janus/Waypoint Link")]
+    [CreateAssetMenu (menuName = "Hirame/World/Waypoint Link")]
     public class WaypointLink : ScriptableObject
     {
         [Header ("Progression")]
@@ -15,9 +15,6 @@ namespace Hirame.Janus
         [SerializeField] private WaypointLink next;
 
         [Header ("Link Info")]
-        [ReadOnly]
-        [SerializeField] private Suid linkedTriggerId;
-        
         [ReadOnly]
         [SerializeField] private string containingSceneGuid;
 
@@ -34,17 +31,14 @@ namespace Hirame.Janus
             return found;
         }
 
-        internal bool PushTrigger (Waypoint trigger)
+        internal bool SetTargetWaypoint (Waypoint trigger)
         {
             if (trigger == false)
             {
-                linkedTriggerId = new Suid ();
                 containingSceneGuid = string.Empty;
             }
             else
             {
-                linkedTriggerId = trigger.Id;
-
                 var scenePath = trigger.gameObject.scene.path;
                 var sceneGuid = AssetDatabase.AssetPathToGUID (scenePath);
                 containingSceneGuid = sceneGuid;
